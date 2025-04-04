@@ -5,9 +5,9 @@ import { Alert, Button, Spinner } from "react-bootstrap";
 import * as yup from "yup";
 import { MultiStepFormProvider } from "./components/MultiStepForm/context/FormContext";
 import MultiStepForm from "./components/MultiStepForm/MultiStepForm";
-import Form1 from "./components/MultiStepForm/forms/Form1";
-import Form2 from "./components/MultiStepForm/forms/Form2";
-import Form3 from "./components/MultiStepForm/forms/Form3";
+import PersonalInfoConfig from './components/MultiStepForm/config/PersonalInfoConfig';
+import ContactInfoConfig from './components/MultiStepForm/config/ContactInfoConfig';
+import AdminSettingsConfig from './components/MultiStepForm/config/AdminSettingsConfig';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -58,66 +58,36 @@ function App() {
     ADMIN: "admin",
   };
 
+
+
   useEffect(() => {
     const fetchFormConfig = async () => {
       setLoading(true);
       try {
-        const response = await new Promise((resolve) =>
-          setTimeout(() => {
-            resolve({
-              personalInfo: {
-                stepId: "personalInfo",
-                title: "Personal Information",
-                component: <Form1 />,
-                schema: yup.object().shape({
-                  firstName: yup.string().required("First Name is required"),
-                  lastName: yup.string().required("Last Name is required"),
-                  birthDate: yup
-                    .date()
-                    .required("Birth Date is required")
-                    .typeError("Invalid date"),
-                }),
-                defaultValues: { firstName: "", lastName: "", birthDate: "" },
-                visible: true, // Always visible
-              },
-              contactInfo: {
-                stepId: "contactInfo",
-                title: "Contact Information",
-                component: <Form2 />,
-                schema: yup.object().shape({
-                  email: yup
-                    .string()
-                    .email("Invalid email")
-                    .required("Email is required"),
-                  phone: yup
-                    .string()
-                    .matches(/^\d{10}$/, "Phone must be 10 digits")
-                    .required("Phone is required"),
-                }),
-                defaultValues: { email: "", phone: "" },
-                visible: true, // Always visible
-              },
-              adminSettings: {
-                stepId: "adminSettings",
-                title: "Admin Settings",
-                component: <Form3 />,
-                schema: yup.object().shape({
-                  role: yup.string().required("Role is required"),
-                }),
-                defaultValues: { role: "" },
-                visible: userPrivilege === PRIVILEGE_LEVELS.ADMIN, // Only for admins
-              },
-            });
-          }, 1000)
-        );
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Create array of configs
+        const configs = [
+          PersonalInfoConfig({}),
+          ContactInfoConfig({}),
+          AdminSettingsConfig({ userPrivilege }),
+        ];
+
+        // Convert array to object using stepId as key
+        const formConfig = configs.reduce((acc, config) => {
+          acc[config.stepId] = config;
+          return acc;
+        }, {});
 
         // Filter steps based on visibility
         const filteredSteps = {};
-        Object.entries(response).forEach(([stepId, stepConfig]) => {
+        Object.entries(formConfig).forEach(([stepId, stepConfig]) => {
           if (stepConfig.visible) {
             filteredSteps[stepId] = stepConfig;
           }
         });
+        
         setFormSteps(filteredSteps);
       } catch (error) {
         console.error("Failed to fetch form config:", error);
