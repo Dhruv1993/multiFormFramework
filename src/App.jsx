@@ -58,8 +58,6 @@ function App() {
     ADMIN: "admin",
   };
 
-
-
   useEffect(() => {
     const fetchFormConfig = async () => {
       setLoading(true);
