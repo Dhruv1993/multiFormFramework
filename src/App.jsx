@@ -67,7 +67,12 @@ function App() {
 
         // Create array of configs
         const configs = [
-          PersonalInfoConfig({ defaultValues: { firstName: 'testname', } }),
+          PersonalInfoConfig({ 
+            defaultValues: { 
+              firstName: 'John', 
+              lastName: 'Doe',
+            } 
+          }),
           ContactInfoConfig({}),
           AdminSettingsConfig({ userPrivilege }),
         ]
