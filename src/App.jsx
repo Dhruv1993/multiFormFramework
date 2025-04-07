@@ -67,10 +67,10 @@ function App() {
 
         // Create array of configs
         const configs = [
-          PersonalInfoConfig({}),
+          PersonalInfoConfig({ defaultValues: { firstName: 'testname', } }),
           ContactInfoConfig({}),
           AdminSettingsConfig({ userPrivilege }),
-        ];
+        ]
 
         // Convert array to object using stepId as key
         const formConfig = configs.reduce((acc, config) => {
