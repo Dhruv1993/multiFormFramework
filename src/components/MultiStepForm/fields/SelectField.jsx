@@ -88,3 +88,5 @@ export const SelectField = ({
 
 const findExistingValue = (options, value) =>
   options.find((option) => option.value === value);
+
+export default SelectField;
