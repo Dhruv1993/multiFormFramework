@@ -1,13 +1,9 @@
 import * as React from 'react'
 import { useFormContext } from 'react-hook-form'
-import {
-  CheckboxField,
-  FieldErrorLabel,
-  TextInputFieldView,
-} from '../../../../forms'
 import styled from 'styled-components'
-import { Form } from 'react-bootstrap'
+import { Form, FormControl } from 'react-bootstrap'
 import get from 'lodash/get'
+import { CheckboxField } from './index'
 
 const Container = styled.div`
   display: flex;
@@ -40,8 +36,7 @@ const Label = styled(Form.Label)`
   white-space: nowrap;
 `
 
-export default NumberField =
-  React.forwardRef(
+const NumberField = React.forwardRef(
     (
       {
         fieldName,
@@ -81,7 +76,7 @@ export default NumberField =
         <>
           <Container>
             <TextInputFieldViewWrapper showCheckbox={showCheckbox}>
-              <TextInputFieldView
+              <FormControl
                 {...register(fieldName)}
                 {...restProps}
                 {...(restProps.toolTip ? { title: restProps.toolTip } : {})}
@@ -92,7 +87,7 @@ export default NumberField =
                   ? { autoComplete: 'off' }
                   : {})}
                 type='number'
-                hasError={hasError}
+                isInvalid={hasError}
                 onChange={onFieldChange}
                 value={value ?? ''}
                 ref={ref}
@@ -106,15 +101,16 @@ export default NumberField =
               <CheckboxContainer>
                 <CheckboxField
                   fieldName={checkboxFieldName || `${fieldName}_checkbox`}
-                  fieldType={FieldTypes.checkbox}
                   readOnly={restProps?.readOnly}
                 />
                 <Label>{checkboxLabel || 'Checkbox Label'}</Label>
               </CheckboxContainer>
             )}
           </Container>
-          {hasError && <FieldErrorLabel>{fieldError.message}</FieldErrorLabel>}
+          {hasError && <Form.Control.Feedback type="invalid">{fieldError.message}</Form.Control.Feedback>}
         </>
       )
     }
   )
+
+export default NumberField;
