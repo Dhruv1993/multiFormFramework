@@ -8,6 +8,7 @@ import MultiStepForm from "./components/MultiStepForm/MultiStepForm";
 import PersonalInfoConfig from './components/MultiStepForm/config/PersonalInfoConfig';
 import ContactInfoConfig from './components/MultiStepForm/config/ContactInfoConfig';
 import AdminSettingsConfig from './components/MultiStepForm/config/AdminSettingsConfig';
+import ExtensionFormConfig from './components/MultiStepForm/config/ExtensionFormConfig';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -75,6 +76,12 @@ function App() {
           }),
           ContactInfoConfig({}),
           AdminSettingsConfig({ userPrivilege }),
+          ExtensionFormConfig({
+            defaultValues: {
+              selectedOptions: [],
+              additionalDetails: {}
+            }
+          }),
         ]
 
         // Convert array to object using stepId as key
