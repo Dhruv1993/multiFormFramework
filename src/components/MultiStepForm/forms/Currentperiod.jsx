@@ -2,7 +2,7 @@ import React from 'react';
 import { ProgressBar } from 'react-bootstrap';
 import {
   ProgressContainer,
-  ProgressItemWrapper,
+  ProgressItemContainer,
   ProgressTitle,
   ProgressBarWrapper,
   ProgressDetails
@@ -50,23 +50,21 @@ const Currentperiod = ({ payload }) => {
 
   return (
     <ProgressContainer>
-      {payload.map((item) => (
-        item.isToBeExercised && (
-          <ProgressItemWrapper key={item.id}>
-            <ProgressTitle>{item.term}</ProgressTitle>
-            <ProgressBarWrapper>
-              <ProgressBar 
-                now={calculateProgress(item)} 
-                variant={getProgressVariant(calculateProgress(item))}
-                label={`${calculateProgress(item)}%`}
-              />
-            </ProgressBarWrapper>
-            <ProgressDetails>
-              <span>Start: {formatDate(item.start)}</span>
-              <span>End: {formatDate(item.stop)}</span>
-            </ProgressDetails>
-          </ProgressItemWrapper>
-        )
+      {payload.filter(item => item.isToBeExercised).map((item) => (
+        <ProgressItemContainer key={item.id}>
+          <ProgressTitle>{item.term}</ProgressTitle>
+          <ProgressBarWrapper>
+            <ProgressBar 
+              now={calculateProgress(item)} 
+              variant={getProgressVariant(calculateProgress(item))}
+              label={`${calculateProgress(item)}%`}
+            />
+          </ProgressBarWrapper>
+          <ProgressDetails>
+            <span>Start: {formatDate(item.start)}</span>
+            <span>End: {formatDate(item.stop)}</span>
+          </ProgressDetails>
+        </ProgressItemContainer>
       ))}
     </ProgressContainer>
   );
