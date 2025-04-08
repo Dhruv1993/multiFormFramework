@@ -8,30 +8,31 @@ export const ProgressContainer = styled.div`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
-export const ProgressItemWrapper = styled.div`
-  margin-bottom: 15px;
-  padding: 10px;
-  background-color: white;
-  border-radius: 6px;
-  border: 1px solid #e0e0e0;
+export const ProgressItemContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 `;
 
-export const ProgressTitle = styled.h4`
-  margin-bottom: 10px;
+export const ProgressTitle = styled.div`
+  margin-right: 15px;
   color: #333;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
+  min-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const ProgressBarWrapper = styled.div`
-  width: 100%;
-  margin-top: 5px;
+  flex-grow: 1;
+  margin-right: 15px;
 `;
 
 export const ProgressDetails = styled.div`
   display: flex;
-  justify-content: space-between;
   font-size: 12px;
   color: #666;
-  margin-top: 5px;
+  min-width: 200px;
 `;
