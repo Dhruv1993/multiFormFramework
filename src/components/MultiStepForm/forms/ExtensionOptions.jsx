@@ -1,140 +1,119 @@
-import React, { useMemo } from 'react';
-import { useTable, useFilters, useSortBy, usePagination, useRowSelect, useResizeColumns } from 'react-table';
-import { TablePageableComponent } from '../components/TablePageableComponent';
-import { TableRowSelectable } from '../components/TableComponents';
-import styled from 'styled-components';
+import React, { useMemo } from 'react'
+import {
+  useTable,
+  useFilters,
+  useSortBy,
+  usePagination,
+  useRowSelect,
+  useResizeColumns,
+  useBlockLayout
+} from 'react-table'
+import { extensionColumns } from './extensionColumns'
+import styled from 'styled-components'
+import { FlexibleTableComponent } from '../components/FlexibleTable'
 
 const defaultTablePageableState = {
   pageIndex: 0,
   pageSize: 10,
   sortBy: [],
   filters: [],
-};
+}
+const Styles = styled.div`
+  padding: 1rem;
 
-const StyledCell = styled.div`
-  max-width: 200px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+    min-height: 0;
+  }
 
-const ResizeHandle = styled.div`
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
-  width: 5px;
-  background: rgba(0, 0, 0, 0.1);
-  cursor: col-resize;
-  user-select: none;
-  touch-action: none;
-`;
+  .table {
+    display: inline-block;
+    border-spacing: 0;
+  }
 
-const ExtensionOptions = ({ data = [] }) => {
+  .tbody {
+    background: #fff;
+  }
+
+  .td {
+    margin: 0;
+    padding: 12px 8px;
+    border-right: 1px solid #e0e0e0;
+    position: relative;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:last-child {
+      border-right: 0;
+    }
+  }
+
+  .td {
+    color: #555;
+  }
+
+  .resizer {
+    display: inline-block;
+    background: #ccc;
+    width: 4px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+    touch-action: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    &:hover,
+    &.isResizing {
+      opacity: 1;
+      background: #999;
+    }
+  }
+
+  .spacer {
+    height: 2rem;
+    width: 100%;
+  }
+`
+export const ExtensionOptions = ({ data = [] }) => {
   // Import columns from utils
-  const columns = useMemo(
-    () => [
-      {
-        Header: 'Line',
-        accessor: 'line',
-        minWidth: 50,
-        width: 80,
-        maxWidth: 100,
-      },
-      {
-        Header: 'Start Date',
-        accessor: 'start',
-        minWidth: 100,
-        width: 120,
-        maxWidth: 150,
-      },
-      {
-        Header: 'Stop Date',
-        accessor: 'stop',
-        minWidth: 100,
-        width: 120,
-        maxWidth: 150,
-      },
-      {
-        Header: 'Term',
-        accessor: 'term',
-        minWidth: 100,
-        width: 150,
-        maxWidth: 200,
-      },
-      {
-        Header: 'Next Exercise Start',
-        accessor: 'exerciseStart',
-        minWidth: 100,
-        width: 120,
-        maxWidth: 150,
-      },
-      {
-        Header: 'Next Exercise Stop',
-        accessor: 'exerciseStop',
-        minWidth: 100,
-        width: 120,
-        maxWidth: 150,
-      },
-      {
-        Header: 'Start IFRS16',
-        accessor: 'isBaselineIFRS16Option',
-        minWidth: 80,
-        width: 100,
-        maxWidth: 120,
-      },
-      {
-        Header: 'Reasonably Certain',
-        accessor: 'isToBeExercised',
-        minWidth: 80,
-        width: 100,
-        maxWidth: 120,
-      },
-      {
-        Header: 'Complete',
-        accessor: 'isCompleted',
-        minWidth: 80,
-        width: 100,
-        maxWidth: 120,
-      },
-      {
-        Header: 'Details',
-        accessor: 'summary',
-        minWidth: 150,
-        width: 200,
-        maxWidth: 300,
-      },
-      {
-        Header: "IFRS16 Recognize From",
-        accessor: "ifrs16RecognitionDate",
-        minWidth: 100,
-        width: 120,
-        maxWidth: 150,
-      },
-      {
-        Header: "Discount Rate Type",
-        accessor: 'discRateAppType',
-        minWidth: 100,
-        width: 120,
-        maxWidth: 150,
-      }
-    ],
-    []
-  );
-
+  const columns = useMemo(() => extensionColumns, [])
   // Use data passed as prop
   const memoData = useMemo(
-    () => data.map(item => ({
-      ...item,
-      isBaselineIFRS16Option: item.isBaselineIFRS16Option ? 'Yes' : 'No',
-      isToBeExercised: item.isToBeExercised ? 'Yes' : 'No',
-      isCompleted: item.isCompleted ? 'Yes' : 'No',
-      discRateAppType: item.discRateAppType === 1 ? 'Fixed' : 
-                      item.discRateAppType === 0 ? 'Variable' : 
-                      item.discRateAppType === 2 ? 'Mixed' : 'N/A'
-    })),
+    () =>
+      data.map(item => ({
+        ...item,
+        isBaselineIFRS16Option: item.isBaselineIFRS16Option ? (
+          <i className='bi bi-check-circle-fill text-success' title='Yes'></i>
+        ) : (
+          <i className='bi bi-x-circle-fill text-danger' title='No'></i>
+        ),
+        isToBeExercised: item.isToBeExercised ? (
+          <i className='bi bi-check-circle-fill text-success' title='Yes'></i>
+        ) : (
+          <i className='bi bi-x-circle-fill text-danger' title='No'></i>
+        ),
+        isCompleted: item.isCompleted ? (
+          <i className='bi bi-check-circle-fill text-success' title='Yes'></i>
+        ) : (
+          <i className='bi bi-x-circle-fill text-danger' title='No'></i>
+        ),
+        discRateAppType:
+          item.discRateAppType === 1
+            ? 'Fixed'
+            : item.discRateAppType === 0
+            ? 'Variable'
+            : item.discRateAppType === 2
+            ? 'Mixed'
+            : 'N/A',
+      })),
     [data]
-  );
+  )
 
   const {
     getTableProps,
@@ -168,75 +147,63 @@ const ExtensionOptions = ({ data = [] }) => {
     useSortBy,
     usePagination,
     useRowSelect,
+    useBlockLayout,
     useResizeColumns
-  );
+  )
 
-  const RowRenderer = ({ row, rowAttributes }) => (
-    <TableRowSelectable
-      {...{ ...row.getRowProps(), ...rowAttributes }}
-      row={row}
-    >
-      {row.cells.map(cell => (
-        <td
-          {...cell.getCellProps()}
-          style={{
-            position: 'relative',
-            ...(cell.column.style || {}),
-          }}
-        >
-          <StyledCell title={cell.value}>
-            {cell.render('Cell')}
-          </StyledCell>
-          {cell.column.canResize && (
-            <ResizeHandle {...cell.getResizerProps()} />
-          )}
-        </td>
-      ))}
-    </TableRowSelectable>
-  );
+  // const RowRenderer = ({ row, rowAttributes }) => (
+  //   <TableRow {...row.getRowProps()} {...rowAttributes} className='tr'>
+  //     {row.cells.map(cell => (
+  //       <div {...cell.getCellProps()} className='td'>
+  //         {cell.render('Cell')}
+  //       </div>
+  //     ))}
+  //   </TableRow>
+  // )
 
   const rowPropsTransform = useMemo(
-    () => (row) => ({
+    () => row => ({
       onClick: () => row.toggleRowSelected(),
       'data-testid': 'extension-option-row',
     }),
     []
-  );
+  )
 
   return (
     <div>
       <h2>Extension Options</h2>
-      <TablePageableComponent
-        attributes={{
-          'data-testid': 'extension-options-table',
-        }}
-        hasFilters={filters.length > 0}
-        enableFilters={true}
-        RowRenderer={RowRenderer}
-        rowPropsTransform={rowPropsTransform}
-        totalCount={flatRows.length}
-        pageCount={pageCount}
-        loading={false}
-        selectedRowIds={selectedRowIds}
-        selectedFlatRows={selectedFlatRows}
-        getTableProps={getTableProps}
-        getTableBodyProps={getTableBodyProps}
-        setAllFilters={setAllFilters}
-        prepareRow={prepareRow}
-        headerGroups={headerGroups}
-        canNextPage={canNextPage}
-        canPreviousPage={canPreviousPage}
-        previousPage={previousPage}
-        gotoPage={gotoPage}
-        pageSize={pageSize}
-        pageIndex={pageIndex}
-        pageOptions={pageOptions}
-        setPageSize={setPageSize}
-        nextPage={nextPage}
-        page={page}
-      />
+      <Styles>
+        <FlexibleTableComponent
+          attributes={{
+            'data-testid': 'extension-options-table',
+          }}
+          data={memoData}
+          columns={columns}
+          hasFilters={filters.length > 0}
+          enableFilters={true}
+          rowPropsTransform={rowPropsTransform}
+          totalCount={flatRows.length}
+          pageCount={pageCount}
+          loading={false}
+          selectedRowIds={selectedRowIds}
+          selectedFlatRows={selectedFlatRows}
+          getTableProps={getTableProps}
+          getTableBodyProps={getTableBodyProps}
+          setAllFilters={setAllFilters}
+          prepareRow={prepareRow}
+          headerGroups={headerGroups}
+          canNextPage={canNextPage}
+          canPreviousPage={canPreviousPage}
+          previousPage={previousPage}
+          gotoPage={gotoPage}
+          pageSize={pageSize}
+          pageIndex={pageIndex}
+          pageOptions={pageOptions}
+          setPageSize={setPageSize}
+          nextPage={nextPage}
+          page={page}
+        />
+      </Styles>
     </div>
-  );
-};
-
-export default ExtensionOptions;
+  )
+}
