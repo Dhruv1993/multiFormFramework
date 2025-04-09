@@ -1,11 +1,9 @@
 import React from 'react';
-import { ProgressBar } from 'react-bootstrap';
+import { ProgressBar, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import {
   ProgressContainer,
   ProgressItemContainer,
-  ProgressTitle,
-  ProgressBarWrapper,
-  ProgressDetails
+  ProgressBarWrapper
 } from './Currentperiod.styled';
 
 const Currentperiod = ({ payload }) => {
@@ -50,22 +48,33 @@ const Currentperiod = ({ payload }) => {
 
   return (
     <ProgressContainer>
-      {payload.filter(item => item.isToBeExercised).map((item) => (
-        <ProgressItemContainer key={item.id}>
-          <ProgressTitle>{item.term}</ProgressTitle>
-          <ProgressBarWrapper>
-            <ProgressBar 
-              now={calculateProgress(item)} 
-              variant={getProgressVariant(calculateProgress(item))}
-              label={`${calculateProgress(item)}%`}
-            />
-          </ProgressBarWrapper>
-          <ProgressDetails>
-            <span>Start: {formatDate(item.start)}</span>
-            <span>End: {formatDate(item.stop)}</span>
-          </ProgressDetails>
-        </ProgressItemContainer>
-      ))}
+      {payload.filter(item => item.isToBeExercised).map((item) => {
+        const progress = calculateProgress(item);
+        const tooltipContent = (
+          <Tooltip id={`tooltip-${item.id}`}>
+            <div><strong>{item.term}</strong></div>
+            <div>Start: {formatDate(item.start)}</div>
+            <div>End: {formatDate(item.stop)}</div>
+          </Tooltip>
+        );
+
+        return (
+          <ProgressItemContainer key={item.id}>
+            <OverlayTrigger
+              placement="top"
+              overlay={tooltipContent}
+            >
+              <ProgressBarWrapper>
+                <ProgressBar 
+                  now={progress} 
+                  variant={getProgressVariant(progress)}
+                  label={`${progress}%`}
+                />
+              </ProgressBarWrapper>
+            </OverlayTrigger>
+          </ProgressItemContainer>
+        );
+      })}
     </ProgressContainer>
   );
 };
