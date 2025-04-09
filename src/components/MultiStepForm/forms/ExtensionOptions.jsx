@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { useTable, useFilters, useSortBy, usePagination, useRowSelect } from 'react-table';
+import { useTable, useFilters, useSortBy, usePagination, useRowSelect, useResizeColumns } from 'react-table';
 import { TablePageableComponent } from '../components/TablePageableComponent';
 import { TableRowSelectable } from '../components/TableComponents';
-import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
 const defaultTablePageableState = {
   pageIndex: 0,
@@ -11,6 +11,25 @@ const defaultTablePageableState = {
   filters: [],
 };
 
+const StyledCell = styled.div`
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const ResizeHandle = styled.div`
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 5px;
+  background: rgba(0, 0, 0, 0.1);
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+`;
+
 const ExtensionOptions = ({ data = [] }) => {
   // Import columns from utils
   const columns = useMemo(
@@ -18,50 +37,86 @@ const ExtensionOptions = ({ data = [] }) => {
       {
         Header: 'Line',
         accessor: 'line',
+        minWidth: 50,
+        width: 80,
+        maxWidth: 100,
       },
       {
         Header: 'Start Date',
         accessor: 'start',
+        minWidth: 100,
+        width: 120,
+        maxWidth: 150,
       },
       {
         Header: 'Stop Date',
         accessor: 'stop',
+        minWidth: 100,
+        width: 120,
+        maxWidth: 150,
       },
       {
         Header: 'Term',
         accessor: 'term',
+        minWidth: 100,
+        width: 150,
+        maxWidth: 200,
       },
       {
         Header: 'Next Exercise Start',
         accessor: 'exerciseStart',
+        minWidth: 100,
+        width: 120,
+        maxWidth: 150,
       },
       {
         Header: 'Next Exercise Stop',
         accessor: 'exerciseStop',
+        minWidth: 100,
+        width: 120,
+        maxWidth: 150,
       },
       {
         Header: 'Start IFRS16',
         accessor: 'isBaselineIFRS16Option',
+        minWidth: 80,
+        width: 100,
+        maxWidth: 120,
       },
       {
         Header: 'Reasonably Certain',
         accessor: 'isToBeExercised',
+        minWidth: 80,
+        width: 100,
+        maxWidth: 120,
       },
       {
         Header: 'Complete',
         accessor: 'isCompleted',
+        minWidth: 80,
+        width: 100,
+        maxWidth: 120,
       },
       {
         Header: 'Details',
         accessor: 'summary',
+        minWidth: 150,
+        width: 200,
+        maxWidth: 300,
       },
       {
         Header: "IFRS16 Recognize From",
         accessor: "ifrs16RecognitionDate",
+        minWidth: 100,
+        width: 120,
+        maxWidth: 150,
       },
       {
         Header: "Discount Rate Type",
         accessor: 'discRateAppType',
+        minWidth: 100,
+        width: 120,
+        maxWidth: 150,
       }
     ],
     []
@@ -112,7 +167,8 @@ const ExtensionOptions = ({ data = [] }) => {
     useFilters,
     useSortBy,
     usePagination,
-    useRowSelect
+    useRowSelect,
+    useResizeColumns
   );
 
   const RowRenderer = ({ row, rowAttributes }) => (
@@ -123,9 +179,17 @@ const ExtensionOptions = ({ data = [] }) => {
       {row.cells.map(cell => (
         <td
           {...cell.getCellProps()}
-          style={cell.column.style || {}}
+          style={{
+            position: 'relative',
+            ...(cell.column.style || {}),
+          }}
         >
-          {cell.render('Cell')}
+          <StyledCell title={cell.value}>
+            {cell.render('Cell')}
+          </StyledCell>
+          {cell.column.canResize && (
+            <ResizeHandle {...cell.getResizerProps()} />
+          )}
         </td>
       ))}
     </TableRowSelectable>
