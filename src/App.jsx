@@ -9,6 +9,7 @@ import PersonalInfoConfig from './components/MultiStepForm/config/PersonalInfoCo
 import ContactInfoConfig from './components/MultiStepForm/config/ContactInfoConfig';
 import AdminSettingsConfig from './components/MultiStepForm/config/AdminSettingsConfig';
 import ExtensionFormConfig from './components/MultiStepForm/config/ExtensionFormConfig';
+import FormOverviewConfig from './components/MultiStepForm/config/FormOverviewConfig';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -48,6 +49,7 @@ const SubmissionResult = styled.div`
 
 function App() {
   const [userPrivilege, setUserPrivilege] = useState("admin");
+  const [isEditMode, setIsEditMode] = useState(false);
   const [submittedData, setSubmittedData] = useState(null);
   const [submitError, setSubmitError] = useState(null);
   const [formSteps, setFormSteps] = useState(null);
@@ -82,6 +84,7 @@ function App() {
               additionalDetails: {}
             }
           }),
+          FormOverviewConfig({ isEditMode, userPrivilege }),
         ]
 
         // Convert array to object using stepId as key
@@ -106,7 +109,7 @@ function App() {
       }
     };
     fetchFormConfig();
-  }, [userPrivilege]);
+  }, [userPrivilege, isEditMode]);
 
   const handlePrivilegeChange = (privilege) => {
     setUserPrivilege(privilege);
@@ -154,6 +157,14 @@ function App() {
         <small className="text-muted">
           Change privilege level to see different form steps
         </small>
+
+        <h5 className="mt-4">Edit Mode</h5>
+        <Button
+          variant={isEditMode ? "primary" : "outline-primary"}
+          onClick={() => setIsEditMode(!isEditMode)}
+        >
+          {isEditMode ? "Exit Edit Mode" : "Enter Edit Mode"}
+        </Button>
       </DemoControls>
 
       <MultiStepFormProvider
